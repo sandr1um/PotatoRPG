@@ -21,5 +21,4 @@ public class Outcome {
     public int getChange(Attribute attribute) {
         return attributesToChange.get(attribute);
     }
-
 }

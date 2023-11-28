@@ -1,6 +1,7 @@
 package com.example.potatorpg.app;
 
 import com.example.potatorpg.app.events.Event;
+import com.example.potatorpg.rest.EventEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +17,24 @@ public class GameState {
         this.scores.put(Attribute.SCALING, 1);
     }
 
+
+
     public int getScore(Attribute attribute) {
         return scores.get(attribute);
     }
 
-    public void applyEvent(Event event) {
+    public void removeOrc() {
+        this.changeScore(Attribute.ORCS, -1);
+    }
+
+    public EventEntity applyEvent(Event event) {
         scores.keySet().forEach(item -> changeScore(item, event.getResult().getChange(item)));
+        return new EventEntity(
+                getScore(Attribute.DESTINY),
+                getScore(Attribute.POTATOES),
+                getScore(Attribute.ORCS),
+                getScore(Attribute.SCALING),
+                event.getMessage());
     }
 
     public boolean isFinished() {
