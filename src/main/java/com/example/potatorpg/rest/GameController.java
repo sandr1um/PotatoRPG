@@ -1,6 +1,7 @@
 package com.example.potatorpg.rest;
 
 
+import com.example.potatorpg.app.Attribute;
 import com.example.potatorpg.app.Dice;
 import com.example.potatorpg.app.GameState;
 import com.example.potatorpg.app.events.*;
@@ -8,6 +9,7 @@ import com.example.potatorpg.app.events.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,10 +54,20 @@ public class GameController {
     }
 
     @PostMapping("/apply")
-    public String applyEvent() {
-        Event event = eventFactory.createEvent();
-        state.applyEvent(event);
-        return event.getMessage();
+    public ResponseEntity<EntityModel<EventEntity>> applyEvent(@RequestBody EventEntity event) {
+        Event nextEvent = eventFactory.createEvent();
+        state.applyEvent(nextEvent);
+        EventEntity entity = new EventEntity(
+                state.getScore(Attribute.DESTINY),
+                state.getScore(Attribute.POTATOES),
+                state.getScore(Attribute.ORCS),
+                state.getScore(Attribute.SCALING),
+                nextEvent.getMessage());
+
+
+        EntityModel<EventEntity> entityModel = assembler.toModel(repository.save(entity));
+
+        return ResponseEntity.ok(entityModel);
     }
 
     @PostMapping("/removeOrc")

@@ -1,9 +1,7 @@
 package com.example.potatorpg.app;
 
 import com.example.potatorpg.app.events.Event;
-import lombok.NoArgsConstructor;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,15 +10,22 @@ public class GameState {
 
     public GameState() {
         this.scores = new HashMap<>();
+        this.scores.put(Attribute.DESTINY, 0);
+        this.scores.put(Attribute.POTATOES, 0);
+        this.scores.put(Attribute.ORCS, 0);
+        this.scores.put(Attribute.SCALING, 1);
+    }
+
+    public int getScore(Attribute attribute) {
+        return scores.get(attribute);
     }
 
     public void applyEvent(Event event) {
-        this.scores.keySet()
-                .forEach(item -> changeScore(item, event.getResult().getChange(item)));
+        scores.keySet().forEach(item -> changeScore(item, event.getResult().getChange(item)));
     }
 
     public boolean isFinished() {
-        return this.scores.values().stream().anyMatch(item -> item == 10);
+        return scores.values().stream().anyMatch(item -> item == 10);
     }
 
     private void changeScore(Attribute attribute, int change) {

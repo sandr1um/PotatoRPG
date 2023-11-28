@@ -1,15 +1,14 @@
 package com.example.potatorpg.rest;
 
+import com.example.potatorpg.app.events.Event;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Entity
 public class EventEntity {
     private @Id @GeneratedValue Long id;
@@ -30,4 +29,5 @@ public class EventEntity {
     public EventEntity() {
 
     }
+
 }
