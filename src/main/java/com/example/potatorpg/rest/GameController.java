@@ -1,7 +1,5 @@
 package com.example.potatorpg.rest;
 
-
-import com.example.potatorpg.app.Attribute;
 import com.example.potatorpg.app.Dice;
 import com.example.potatorpg.app.GameState;
 import com.example.potatorpg.app.events.*;
@@ -24,9 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class GameController {
     private final GameState state = new GameState();
     private final EventFactory eventFactory = new EventFactory(new Dice());
-
     private final GameRepository repository;
-
     private final GameModelAssembler assembler;
 
     public GameController(GameRepository repository, GameModelAssembler assembler) {
@@ -77,8 +73,6 @@ public class GameController {
 
         return ResponseEntity.ok(entityModel);
     }
-
-
 
 }
 

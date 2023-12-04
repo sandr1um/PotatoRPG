@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class GameState {
     private final Map<Attribute, Integer> scores;
-
     public GameState() {
         this.scores = new HashMap<>();
         this.scores.put(Attribute.DESTINY, 0);
@@ -16,25 +15,20 @@ public class GameState {
         this.scores.put(Attribute.ORCS, 0);
         this.scores.put(Attribute.SCALING, 1);
     }
-
-
-
     public int getScore(Attribute attribute) {
         return scores.get(attribute);
     }
-
-    public void removeOrc() {
-        this.changeScore(Attribute.ORCS, -1);
-    }
-
     public EventEntity applyEvent(Event event) {
-        scores.keySet().forEach(item -> changeScore(item, event.getResult().getChange(item)));
+        if (!isFinished()) {
+            scores.keySet().forEach(item -> changeScore(item, event.getResult().getChange(item)));
+        }
         return new EventEntity(
                 getScore(Attribute.DESTINY),
                 getScore(Attribute.POTATOES),
                 getScore(Attribute.ORCS),
                 getScore(Attribute.SCALING),
                 event.getMessage());
+
     }
 
     public boolean isFinished() {

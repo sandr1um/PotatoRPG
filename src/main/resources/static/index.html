@@ -1,10 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Page</title>
+    <!-- Use Vue.js version 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <style>
+        /* Add some basic styling for the squares */
+        .square {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            background-color: darkred;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-$END$
+
+<div id="app">
+    <h1>Potato RPG</h1>
+
+    <!-- Input fields for values from 0 to 10 -->
+    <div>
+        <label for="destiny">Destiny:</label>
+        <input type="number" id="destiny" v-model="destiny" min="0" max="10">
+        <div v-for="(color, index) in colors" :key="index" class="square" :style="{ backgroundColor: color }"></div>
+    </div>
+
+    <div>
+        <label for="potatoes">Potatoes:</label>
+        <input type="number" id="potatoes" v-model="potatoes" min="0" max="10">
+    </div>
+
+    <div>
+        <label for="orcs">Orcs:</label>
+        <input type="number" id="orcs" v-model="orcs" min="0" max="10">
+    </div>
+
+    <div>
+        <button @click="performAction('/events', 'GET')">Show all Events</button>
+        <button @click="performAction('/apply', 'POST')">Roll</button>
+        <button @click="performAction('/removeOrc', 'POST')">Remove 1 Orc</button>
+    </div>
+
+    <!-- Display the result -->
+    <div>
+        <h2>Message:</h2>
+        <p>{{ message }}</p>
+    </div>
+</div>
+
+<script>
+    // Corrected: use data as a function
+    const app = Vue.createApp({
+        data() {
+            return {
+                id: 0,
+                destiny: 0,
+                potatoes: 0,
+                orcs: 0,
+                scaling: 1,
+                message: "",
+                colors: Array(10).fill('lightblue') // Initialize colors array with default color
+            };
+        },
+        methods: {
+            performAction(endpoint, method) {
+                // Assuming you want to send the data as JSON in the request body
+                const body = JSON.stringify({
+                    id: this.id,
+                    destiny: this.destiny,
+                    potatoes: this.potatoes,
+                    orcs: this.orcs,
+                    scaling: this.scaling,
+                });
+
+                // Make a fetch request to the specified endpoint using fetch
+                fetch('/game' + endpoint, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json(); // assuming the response is JSON
+                    })
+                    .then(data => {
+                        // Handle the successful response from the server
+                        this.message = JSON.stringify(data.message);
+                        this.destiny = JSON.parse(data.destiny);
+                        this.potatoes = JSON.parse(data.potatoes);
+                        this.orcs = JSON.parse(data.orcs);
+                        this.colors.fill('darkred', 0, this.destiny);
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        this.message = 'Error: ' + error.message;
+                    });
+            }
+        }
+    });
+
+    app.mount('#app');
+</script>
+
 </body>
 </html>
