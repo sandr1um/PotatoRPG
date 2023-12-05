@@ -58,7 +58,7 @@
     <div>
         <h2>All Messages:</h2>
         <ul>
-            <li v-for="(msg, index) in allMessages" :key="index">{{ msg }}</li>
+            <li v-for="(msg, index) in allMessages" :key="index">{{ msg.message }}</li>
         </ul>
     </div>
 </div>
@@ -73,10 +73,11 @@
                 potatoes: 0,
                 orcs: 0,
                 scaling: 1,
-                message: "",
+                message: "New Game!",
                 destiny_squares: Array(10).fill('lightblue'), // Initialize colors array with default color
                 potato_squares: Array(10).fill('lightblue'),
-                orc_squares: Array(10).fill('lightblue')
+                orc_squares: Array(10).fill('lightblue'),
+                allMessages: []
             };
         },
         methods: {
@@ -95,11 +96,9 @@
                         return response.json(); // assuming the response is JSON
                     })
                     .then(data => {
-                        this.allMessages = [];
-
                         // Assume the backend returns a 'messages' property containing an array of messages
-                        if (data.messages && Array.isArray(data.messages)) {
-                            this.allMessages = data.messages;
+                        if (data?._embedded?.eventEntityList) {
+                            this.allMessages = data?._embedded?.eventEntityList;
                         } else {
                             // Handle the successful response from the server
                             this.message = JSON.stringify(data.message);
