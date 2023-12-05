@@ -38,11 +38,10 @@
     </div>
 
     <div>
-        <button @click="performAction('/events', 'GET')">Show all Events</button>
-        <button @click="performAction('/apply', 'POST')">Roll</button>
-        <button @click="performAction('/removeOrc', 'POST')">Remove 1 Orc</button>
-        <button @click="performAction('/newGame', 'PUT')">New Game</button>
-
+        <button @click="getMethod()">Show all Events</button>
+        <button @click="postMethod('/apply')">Roll</button>
+        <button @click="postMethod('/removeOrc')">Remove 1 Orc</button>
+        <button @click="putMethod()">New Game</button>
     </div>
 
     <div>
@@ -81,10 +80,67 @@
             };
         },
         methods: {
-            performAction(endpoint, method) {
-                // Make a fetch request to the specified endpoint using fetch
+            postMethod(endpoint) {
                 fetch('/game' + endpoint, {
-                    method: method,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json(); // assuming the response is JSON
+                })
+                .then(data => {
+                    this.message = JSON.stringify(data.message);
+                    this.scaling = JSON.parse(data.scaling);
+
+                    this.destiny_squares.fill('lightblue')
+                    this.potato_squares.fill('lightblue')
+                    this.orc_squares.fill('lightblue')
+
+
+                    this.destiny_squares.fill('darkred', 0, JSON.parse(data.destiny));
+                    this.potato_squares.fill('#ffc284', 0, JSON.parse(data.potatoes));
+                    this.orc_squares.fill('#227325', 0, JSON.parse(data.orcs))
+                })
+                    .catch(error => {
+                        // Handle errors
+                        this.message = 'Error: ' + error.message;
+                    });
+            },
+
+            getMethod() {
+                fetch('/game/events', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+            })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json(); // assuming the response is JSON
+                    })
+                    .then(data => {
+                        // Assume the backend returns a 'messages' property containing an array of messages
+                        if (data?._embedded?.eventEntityList) {
+                            this.allMessages = data?._embedded?.eventEntityList;
+                        }
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        this.message = 'Error: ' + error.message;
+                    });
+            },
+
+            putMethod() {
+                fetch('/game/newGame', {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -96,23 +152,17 @@
                         return response.json(); // assuming the response is JSON
                     })
                     .then(data => {
-                        // Assume the backend returns a 'messages' property containing an array of messages
-                        if (data?._embedded?.eventEntityList) {
-                            this.allMessages = data?._embedded?.eventEntityList;
-                        } else {
-                            // Handle the successful response from the server
-                            this.message = JSON.stringify(data.message);
-                            this.scaling = JSON.parse(data.scaling);
+                        this.message = JSON.stringify(data.message);
+                        this.scaling = JSON.parse(data.scaling);
 
-                            this.destiny_squares.fill('lightblue')
-                            this.potato_squares.fill('lightblue')
-                            this.orc_squares.fill('lightblue')
+                        this.destiny_squares.fill('lightblue')
+                        this.potato_squares.fill('lightblue')
+                        this.orc_squares.fill('lightblue')
 
 
-                            this.destiny_squares.fill('darkred', 0, JSON.parse(data.destiny));
-                            this.potato_squares.fill('#ffc284', 0, JSON.parse(data.potatoes));
-                            this.orc_squares.fill('#227325', 0, JSON.parse(data.orcs))
-                        }
+                        this.destiny_squares.fill('darkred', 0, JSON.parse(data.destiny));
+                        this.potato_squares.fill('#ffc284', 0, JSON.parse(data.potatoes));
+                        this.orc_squares.fill('#227325', 0, JSON.parse(data.orcs))
                     })
                     .catch(error => {
                         // Handle errors
