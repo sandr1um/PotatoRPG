@@ -1,16 +1,17 @@
 package com.example.potatorpg.app.events;
 
-import com.example.potatorpg.app.Attribute;
+import static com.example.potatorpg.app.Attribute.ORCS;
+import static com.example.potatorpg.app.Attribute.POTATOES;
 
 public class HurlingEvent extends Event {
 
-    public HurlingEvent() {
-        super.message = "-1 Orc, -1 Potato";
-        super.result.setAttribute(Attribute.ORCS, -1);
-        super.result.setAttribute(Attribute.POTATOES, -1);
+    public HurlingEvent(int scaling) {
+        super.message = "1 Orc removed. " + scaling + " potatoes used.";
+        super.result.setAttribute(ORCS, -1);
+        super.result.setAttribute(POTATOES, -1 * scaling);
     }
     @Override
-    public Event generateEvent(int diceResult) {
-        return new HurlingEvent();
+    public Event generateEvent(int scaling) {
+        return new HurlingEvent(scaling);
     }
 }

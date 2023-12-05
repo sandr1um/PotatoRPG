@@ -12,7 +12,6 @@
             width: 50px;
             height: 50px;
             margin: 5px;
-            background-color: darkred;
             display: inline-block;
         }
     </style>
@@ -24,31 +23,43 @@
 
     <!-- Input fields for values from 0 to 10 -->
     <div>
-        <label for="destiny">Destiny:</label>
-        <input type="number" id="destiny" v-model="destiny" min="0" max="10">
-        <div v-for="(color, index) in colors" :key="index" class="square" :style="{ backgroundColor: color }"></div>
+        <h2 for="destiny">Destiny:</h2>
+        <div v-for="(color, index) in destiny_squares" :key="index" class="square" :style="{ backgroundColor: color }"></div>
     </div>
 
     <div>
-        <label for="potatoes">Potatoes:</label>
-        <input type="number" id="potatoes" v-model="potatoes" min="0" max="10">
+        <h2 for="potatoes">Potatoes:</h2>
+        <div v-for="(color, index) in potato_squares" :key="index" class="square" :style="{ backgroundColor: color }"></div>
     </div>
 
     <div>
-        <label for="orcs">Orcs:</label>
-        <input type="number" id="orcs" v-model="orcs" min="0" max="10">
+        <h2 for="orcs">Orcs:</h2>
+        <div v-for="(color, index) in orc_squares" :key="index" class="square" :style="{ backgroundColor: color }"></div>
     </div>
 
     <div>
         <button @click="performAction('/events', 'GET')">Show all Events</button>
         <button @click="performAction('/apply', 'POST')">Roll</button>
         <button @click="performAction('/removeOrc', 'POST')">Remove 1 Orc</button>
+        <button @click="performAction('/newGame', 'PUT')">New Game</button>
+
+    </div>
+
+    <div>
+        <h2>Scaling:</h2>
+        <p>{{scaling}}<p>
     </div>
 
     <!-- Display the result -->
     <div>
         <h2>Message:</h2>
         <p>{{ message }}</p>
+    </div>
+    <div>
+        <h2>All Messages:</h2>
+        <ul>
+            <li v-for="(msg, index) in allMessages" :key="index">{{ msg }}</li>
+        </ul>
     </div>
 </div>
 
@@ -63,20 +74,13 @@
                 orcs: 0,
                 scaling: 1,
                 message: "",
-                colors: Array(10).fill('lightblue') // Initialize colors array with default color
+                destiny_squares: Array(10).fill('lightblue'), // Initialize colors array with default color
+                potato_squares: Array(10).fill('lightblue'),
+                orc_squares: Array(10).fill('lightblue')
             };
         },
         methods: {
             performAction(endpoint, method) {
-                // Assuming you want to send the data as JSON in the request body
-                const body = JSON.stringify({
-                    id: this.id,
-                    destiny: this.destiny,
-                    potatoes: this.potatoes,
-                    orcs: this.orcs,
-                    scaling: this.scaling,
-                });
-
                 // Make a fetch request to the specified endpoint using fetch
                 fetch('/game' + endpoint, {
                     method: method,
@@ -91,12 +95,25 @@
                         return response.json(); // assuming the response is JSON
                     })
                     .then(data => {
-                        // Handle the successful response from the server
-                        this.message = JSON.stringify(data.message);
-                        this.destiny = JSON.parse(data.destiny);
-                        this.potatoes = JSON.parse(data.potatoes);
-                        this.orcs = JSON.parse(data.orcs);
-                        this.colors.fill('darkred', 0, this.destiny);
+                        this.allMessages = [];
+
+                        // Assume the backend returns a 'messages' property containing an array of messages
+                        if (data.messages && Array.isArray(data.messages)) {
+                            this.allMessages = data.messages;
+                        } else {
+                            // Handle the successful response from the server
+                            this.message = JSON.stringify(data.message);
+                            this.scaling = JSON.parse(data.scaling);
+
+                            this.destiny_squares.fill('lightblue')
+                            this.potato_squares.fill('lightblue')
+                            this.orc_squares.fill('lightblue')
+
+
+                            this.destiny_squares.fill('darkred', 0, JSON.parse(data.destiny));
+                            this.potato_squares.fill('#ffc284', 0, JSON.parse(data.potatoes));
+                            this.orc_squares.fill('#227325', 0, JSON.parse(data.orcs))
+                        }
                     })
                     .catch(error => {
                         // Handle errors

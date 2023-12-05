@@ -67,7 +67,20 @@ public class GameController {
     @PostMapping("/removeOrc")
     public ResponseEntity<EntityModel<EventEntity>> removeOrc() {
 
-        EventEntity entity = state.applyEvent(new HurlingEvent());
+        EventEntity entity = state.applyEvent(new HurlingEvent(state.getScaling()));
+
+        if (state.isFinished()) {
+            entity.setMessage(state.generateFinalMessage());
+        }
+
+        EntityModel<EventEntity> entityModel = assembler.toModel(repository.save(entity));
+
+        return ResponseEntity.ok(entityModel);
+    }
+
+    @PutMapping("/newGame")
+    public ResponseEntity<EntityModel<EventEntity>> newGame() {
+        EventEntity entity = state.startNewGame();
 
         EntityModel<EventEntity> entityModel = assembler.toModel(repository.save(entity));
 
