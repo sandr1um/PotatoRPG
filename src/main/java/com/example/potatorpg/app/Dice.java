@@ -4,10 +4,9 @@ import java.util.OptionalInt;
 import java.util.Random;
 
 public class Dice {
+    private static final Random rnd = new Random();
+
     public int roll() {
-        Random rnd = new Random();
-        OptionalInt random = rnd.ints(1, 6 + 1)
-                .findFirst();
-        return random.getAsInt();
+        return rnd.nextInt(6) + 1;
     }
 }
