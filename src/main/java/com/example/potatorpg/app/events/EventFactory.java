@@ -7,8 +7,7 @@ import lombok.AllArgsConstructor;
 public class EventFactory {
 
     private final Dice dice;
-
-    public  Event createEvent() {
+    public Event createEvent() {
         int firstDiceRoll = dice.roll();
         return switch (firstDiceRoll) {
             case 1,2 -> new GardenEvent(dice.roll());
